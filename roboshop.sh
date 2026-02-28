@@ -15,7 +15,7 @@ INSTAND_ID=$(aws ec2 run-instances \
   --output text)
 
   if [ $instance=="frontend" ]; then
-    IP= $(aws ec2 describe-instances \
+    IP=$(aws ec2 describe-instances \
   --instance-ids $INSTAND_ID \
   --query 'Reservations[0].Instances[0].PublicIpAddress' \
   --output text)
@@ -23,7 +23,7 @@ INSTAND_ID=$(aws ec2 run-instances \
   RECORD_NAME="$instance.$DOMAIN_NAME" #laddudevops86.fun
   
   else 
-  IP= $(aws ec2 describe-instances \
+  IP=$(aws ec2 describe-instances \
   --instance-ids $INSTAND_ID \
   --query 'Reservations[0].Instances[0].PrivateIpAddress' \
   --output text
