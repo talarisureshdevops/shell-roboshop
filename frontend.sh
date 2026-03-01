@@ -49,12 +49,12 @@ validate $? "download the frontend code"
 
 cd /usr/share/nginx/html 
 unzip /tmp/frontend.zip &>>$LOGS_FILE
-VALIDATE $? "Downloaded and unzipped frontend"
+validate $? "Downloaded and unzipped frontend"
 
 rm -rf /etc/nginx/nginx.conf  &>>$LOGS_FILE
 
 cp $SCRIPT_DIR/nginx.conf /etc/nginx/nginx.conf
-VALIDATE $? "Copied our nginx conf file"
+validate $? "Copied our nginx conf file"
 
 systemctl restart nginx
-VALIDATE $? "Restarted Nginx"
+validate $? "Restarted Nginx"

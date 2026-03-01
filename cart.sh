@@ -37,7 +37,7 @@ validate $? "installing nodejs"
 id roboshop &>>$LOGS_FILE
 if [ $? -ne 0 ]; then
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOGS_FILE
-    VALIDATE $? "Creating system user"
+    validate $? "Creating system user"
 else
     echo -e "Roboshop user already exist ... $Y SKIPPING $N"
 fi
@@ -60,7 +60,7 @@ validate $? "Unzip catalogue code"
 npm install &>>$LOGS_FILE
 validate $? "installing Dependencies"
 
-cp $SCRIPT_DIR/cat.service /etc/systemd/system/cart.service &>>$LOGS_FILE
+cp $SCRIPT_DIR/cart.service /etc/systemd/system/cart.service &>>$LOGS_FILE
 validate $? "Create systemctl service"
 
 systemctl daemon-reload &>>$LOGS_FILE
