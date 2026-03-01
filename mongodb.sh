@@ -22,7 +22,7 @@ echo -e "$2...........................$G Success $N" | tee -a $LOGS_FILE
 fi
 }
 
-cp mango.repo /etc/yum.repos.d/mongo.repo
+cp mongo.repo /etc/yum.repos.d/mongo.repo
 validate $? "Copying mongo repo"
 
 dnf install mongodb-org -y
