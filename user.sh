@@ -3,7 +3,7 @@ USER_ID=$(id -u)
 LOGS_FOLDER="/var/log/shell-roboshop"
 LOGS_FILE="$LOGS_FOLDER/$0.log"
 SCRIPT_DIR=$PWD
-MONGODB_HOST="mongodb.laddudevops86.fun"
+
 
 R="\e[31m"
 G="\e[32m"
@@ -25,10 +25,10 @@ fi
 }
 
 dnf module disable nodejs -y &>>$LOGS_FILE
-validate $? "Disabling nodejs dafault version"
+validate $? "disable older nodejs versions"
 
 dnf module enable nodejs:20 -y &>>$LOGS_FILE
-validate $? "Enabling nodejs latest version"
+validate $? "Enable nodejs:20"
 
 dnf install nodejs -y &>>$LOGS_FILE
 validate $? "installing nodejs"
@@ -41,11 +41,11 @@ else
     echo -e "Roboshop user already exist ... $Y SKIPPING $N"
 fi
 
-mkdir -p /app &>>$LOGS_FILE &>>$LOGS_FILE
+mkdir -p /app &>>$LOGS_FILE
 validate $? "creating app directory"
 
-curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOGS_FILE
-validate $? "Downloading catalogue code"
+curl -L -o /tmp/user.zip https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip &>>$LOGS_FILE
+validate $? "downloading user code"
 
 cd /app &>>$LOGS_FILE
 validate $? "Moving to app directory"
@@ -53,34 +53,21 @@ validate $? "Moving to app directory"
 rm -rf /app/* &>>$LOGS_FILE
 validate $? "removing existing code"
 
-unzip /tmp/catalogue.zip &>>$LOGS_FILE
-validate $? "Unzip catalogue code"
+unzip /tmp/user.zip &>>$LOGS_FILE
+validate $? "Unzip user code"
 
-npm install  &>>$LOGS_FILE
+npm install &>>$LOGS_FILE
 validate $? "installing Dependencies"
 
-cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service &>>$LOGS_FILE
+cp $SCRIPT_DIR/user.service /etc/systemd/system/user.service &>>$LOGS_FILE
 validate $? "Create systemctl service"
 
 systemctl daemon-reload &>>$LOGS_FILE
-systemctl enable catalogue &>>$LOGS_FILE
-systemctl start catalogue &>>$LOGS_FILE
-validate $? "starting and enabling catalogue"
+validate $? "daemon-reload"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOGS_FILE
-dnf install mongodb-mongosh -y &>>$LOGS_FILE
+systemctl start user &>>$LOGS_FILE
+validate $? "start user service"
 
-INDEX=$(mongosh --host $MONGODB_HOST --quiet  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
-
-if [ $INDEX -le 0 ]; then
-    mongosh --host $MONGODB_HOST </app/db/master-data.js
-    VALIDATE $? "Loading products"
-else
-    echo -e "Products already loaded ... $Y SKIPPING $N"
-fi
-
-systemctl restart catalogue &>>$LOGS_FILE
-VALIDATE $? "Restarting catalogue"
 
 
 
